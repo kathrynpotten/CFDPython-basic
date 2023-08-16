@@ -52,6 +52,7 @@ def burgers(u, nt, dx, nu, dt):
     return u
 
 
+# analytical solution
 u_analytical = np.asarray([ufunc(nt * dt, xi, nu) for xi in x])
 
 plt.plot(x, burgers(u, nt, dx, nu, dt), marker="o", label="Computational")
