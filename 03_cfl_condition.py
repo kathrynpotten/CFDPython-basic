@@ -34,7 +34,8 @@ plt.show()
 
 def linearconv_courant(nx, nt):
     """function to solve linear convection with nx grid points and nt timesteps,
-    with appropriate delta t calculated from number of grid points using CFL number to ensure stability
+    with appropriate delta t calculated from number of grid points using CFL number to ensure stability.
+    Initial condition hat function
     """
     dx = 2 / (nx - 1)
     c = 1

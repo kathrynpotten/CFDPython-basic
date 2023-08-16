@@ -5,7 +5,8 @@ from matplotlib import pyplot as plt
 
 
 def diffusion(nx, nt):
-    """function to solve 1D diffusion with nx grid points and nt timesteps"""
+    """function to solve 1D diffusion with nx grid points and nt timesteps,
+    initial condition hat function"""
     dx = 2 / (nx - 1)
     nu = 0.3
     sigma = 0.2
