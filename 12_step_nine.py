@@ -36,7 +36,7 @@ def laplace2d(p, y, dx, dy, l1norm_target):
 nx = 31
 ny = 31
 dx = 2 / (nx - 1)
-dy = 2 / (ny - 1)
+dy = 1 / (ny - 1)
 
 x = np.linspace(0, 2, nx)
 y = np.linspace(0, 1, ny)
