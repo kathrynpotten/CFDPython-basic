@@ -50,6 +50,28 @@ def pressure_poisson(p, b, dx, dy):
     return p
 
 
+def u_momentum_equation(un, vn, p, dx, dy, dt, rho, nu):
+    return (
+        un[1:-1, 1:-1]
+        - dt / dx * un[1:-1, 1:-1] * (un[1:-1, 1:-1] - un[1:-1, :-2])
+        - dt / dy * vn[1:-1, 1:-1] * (un[1:-1, 1:-1] - un[:-2, 1:-1])
+        - dt / (rho * 2 * dx) * (p[1:-1, 2:] - p[1:-1, :-2])
+        + nu * dt / dx**2 * (un[1:-1, 2:] - 2 * un[1:-1, 1:-1] + un[1:-1, :-2])
+        + nu * dt / dy**2 * (un[2:, 1:-1] - 2 * un[1:-1, 1:-1] + un[:-2, 1:-1])
+    )
+
+
+def v_momentum_equation(un, vn, p, dx, dy, dt, rho, nu):
+    return (
+        vn[1:-1, 1:-1]
+        - dt / dx * un[1:-1, 1:-1] * (vn[1:-1, 1:-1] - vn[1:-1, :-2])
+        - dt / dy * vn[1:-1, 1:-1] * (vn[1:-1, 1:-1] - vn[:-2, 1:-1])
+        - dt / (rho * 2 * dy) * (p[2:, 1:-1] - p[:-2, 1:-1])
+        + nu * dt / dx**2 * (vn[1:-1, 2:] - 2 * vn[1:-1, 1:-1] + vn[1:-1, :-2])
+        + nu * dt / dy**2 * (vn[2:, 1:-1] - 2 * vn[1:-1, 1:-1] + vn[:-2, 1:-1])
+    )
+
+
 def cavity_flow(u, v, p, b, dx, dy, dt, nt, rho, nu):
     for _ in range(nt + 1):
         b = build_b(b, u, v, rho, dt, dx, dy)
@@ -57,23 +79,8 @@ def cavity_flow(u, v, p, b, dx, dy, dt, nt, rho, nu):
 
         un = u.copy()
         vn = v.copy()
-        u[1:-1, 1:-1] = (
-            un[1:-1, 1:-1]
-            - dt / dx * un[1:-1, 1:-1] * (un[1:-1, 1:-1] - un[1:-1, :-2])
-            - dt / dy * vn[1:-1, 1:-1] * (un[1:-1, 1:-1] - un[:-2, 1:-1])
-            - dt / (rho * 2 * dx) * (p[1:-1, 2:] - p[1:-1, :-2])
-            + nu * dt / dx**2 * (un[1:-1, 2:] - 2 * un[1:-1, 1:-1] + un[1:-1, :-2])
-            + nu * dt / dy**2 * (un[2:, 1:-1] - 2 * un[1:-1, 1:-1] + un[:-2, 1:-1])
-        )
-
-        v[1:-1, 1:-1] = (
-            vn[1:-1, 1:-1]
-            - dt / dx * un[1:-1, 1:-1] * (vn[1:-1, 1:-1] - vn[1:-1, :-2])
-            - dt / dy * vn[1:-1, 1:-1] * (vn[1:-1, 1:-1] - vn[:-2, 1:-1])
-            - dt / (rho * 2 * dy) * (p[2:, 1:-1] - p[:-2, 1:-1])
-            + nu * dt / dx**2 * (vn[1:-1, 2:] - 2 * vn[1:-1, 1:-1] + vn[1:-1, :-2])
-            + nu * dt / dy**2 * (vn[2:, 1:-1] - 2 * vn[1:-1, 1:-1] + vn[:-2, 1:-1])
-        )
+        u[1:-1, 1:-1] = u_momentum_equation(u, un, vn, p, dx, dy, dt, rho, nu)
+        v[1:-1, 1:-1] = v_momentum_equation(u, un, vn, p, dx, dy, dt, rho, nu)
 
         u[-1, :] = 1
         u[0, :] = 0
